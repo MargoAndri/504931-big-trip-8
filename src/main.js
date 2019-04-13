@@ -1,10 +1,11 @@
 import Event from './event.js';
 import EventEdit from './event-edit.js';
 import Filter from './filter.js';
-import {moneyChart, transportChart} from "./charts";
-import {Filters, api} from "./data";
+import {moneyChart, transportChart, timeSpendChart} from "./charts";
+import {filters, api} from "./data";
 import Provider from './provider.js';
 import Store from './store.js';
+import moment from "moment";
 
 const EVENTS_STORE_KEY = `events-store-key`;
 const eventSection = document.querySelector(`.trip-day__items`);
@@ -37,7 +38,7 @@ const transportData = function (events) {
     return arr;
   }, []);
 
-  transportChart.data.labels = [...new Set(filteredTransportTypes)];
+  transportChart.data.labels = Object.keys(counts);
   transportChart.data.datasets[0].data = Object.values(counts);
   transportChart.update();
 };
@@ -45,8 +46,6 @@ const transportData = function (events) {
 
 // Статистика затрат
 const moneyData = function (events) {
-  const eventTypes = events.map((item) => item.type);
-  moneyChart.data.labels = [...new Set(eventTypes)];
   const priceCount = events.reduce((totalPrices, event) => {
     let price = event.checkedOffers.reduce(function (totalPrice, current) {
       return totalPrice + current.price;
@@ -58,8 +57,25 @@ const moneyData = function (events) {
     }
     return totalPrices;
   }, []);
+  moneyChart.data.labels = Object.keys(priceCount);
   moneyChart.data.datasets[0].data = Object.values(priceCount);
   moneyChart.update();
+};
+
+// Статистика времени
+const timeData = function (events) {
+  const timeCount = events.reduce((totalTimeList, event) => {
+    let timeDuration = moment.duration(event.arrivalTime.diff(event.departureTime));
+    if (totalTimeList[event.type] !== undefined) {
+      totalTimeList[event.type].add(timeDuration);
+    } else {
+      totalTimeList[event.type] = timeDuration;
+    }
+    return totalTimeList;
+  }, []);
+  timeSpendChart.data.labels = Object.keys(timeCount);
+  timeSpendChart.data.datasets[0].data = Object.values(timeCount);
+  timeSpendChart.update();
 };
 
 /**
@@ -131,11 +147,12 @@ provider.getPoints(onLoad)
     renderFilters(points);
     transportData(points);
     moneyData(points);
+    timeData(points);
   });
 
 // Фильтры
 const renderFilters = function (events) {
-  Filters.forEach((item) => {
+  filters.forEach((item) => {
     const filter = new Filter(item.name, item.title);
     filter.onFilter = () => {
       const filteredEvents = events.filter(item.filter);

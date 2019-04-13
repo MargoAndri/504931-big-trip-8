@@ -14,7 +14,7 @@ const Type = {
   sightseeing: `🏛️`
 };
 
-const Filters = [
+const filters = [
   {
     title: `Everything`,
     name: `everything`,
@@ -44,4 +44,4 @@ api.getOffers()
     offerList = offers;
   });
 
-export {Type, Filters, api, destinationList, offerList};
+export {Type, filters, api, destinationList, offerList};
