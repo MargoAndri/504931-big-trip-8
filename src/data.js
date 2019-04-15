@@ -1,6 +1,7 @@
 import moment from 'moment';
 import API from "./api";
 
+const ECS_KEY_CODE = `Escape`;
 const AUTHORIZATION = `Basic eo0w590ik29889z`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
@@ -44,4 +45,4 @@ api.getOffers()
     offerList = offers;
   });
 
-export {Type, filters, api, destinationList, offerList};
+export {Type, filters, api, destinationList, offerList, ECS_KEY_CODE};

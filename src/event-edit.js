@@ -1,7 +1,7 @@
 import Component from './component.js';
 import flatpickr from 'flatpickr';
 import moment from 'moment';
-import {Type, destinationList, offerList} from './data.js';
+import {Type, destinationList, offerList, ECS_KEY_CODE} from './data.js';
 import createElement from './create-element.js';
 
 export default class EventEdit extends Component {
@@ -16,9 +16,11 @@ export default class EventEdit extends Component {
     this._checkedOffers = data.checkedOffers;
     this._onSubmit = null;
     this._onDelete = null;
+    this._onEscape = null;
     this._state.isFavorite = false;
     this._onDeleteClick = this._onDeleteClick.bind(this);
     this._onSubmitClick = this._onSubmitClick.bind(this);
+    this._onEscapeClick = this._onEscapeClick.bind(this);
     this._onChangeFavorite = this._onChangeFavorite.bind(this);
     this._onChangeType = this._onChangeType.bind(this);
     this._onChangeDestination = this._onChangeDestination.bind(this);
@@ -61,6 +63,12 @@ export default class EventEdit extends Component {
       this._onSubmit(newData);
     }
     this.update(newData);
+  }
+
+  _onEscapeClick(evt) {
+    if (typeof this._onEscape === `function` && evt.code === ECS_KEY_CODE) {
+      this._onEscape();
+    }
   }
 
   _onDeleteClick(evt) {
@@ -110,6 +118,10 @@ export default class EventEdit extends Component {
     this._onDelete = fn;
   }
 
+  set onEscape(fn) {
+    this._onEscape = fn;
+  }
+
   get title() {
     return this._destination.name;
   }
@@ -135,7 +147,7 @@ export default class EventEdit extends Component {
         <header class="point__header">
           <label class="point__date">
             choose day
-            <input class="point__input" type="text" placeholder="MAR 18" name="day">
+            <input class="point__input" type="text" placeholder="MAR 18" name="day" required>
           </label>
     
           <div class="travel-way">
@@ -178,14 +190,14 @@ export default class EventEdit extends Component {
 
           <div class="point__time">
             choose time
-            <input class="point__input" type="text" value="${this._departureTime.format(`YYYY-MM-DD HH:mm`)}" name="start" placeholder="${this._departureTime}">
-            <input class="point__input" type="text" value="${this._arrivalTime.format(`YYYY-MM-DD HH:mm`)}" name="end" placeholder="${this._arrivalTime}">
+            <input class="point__input" type="text" value="${this._departureTime.format(`HH:mm`)}" name="start" placeholder="${this._departureTime.format(`HH:mm`)}" required>
+            <input class="point__input" type="text" value="${this._arrivalTime.format(`HH:mm`)}" name="end" placeholder="${this._arrivalTime.format(`HH:mm`)}" required>
           </div>
 
           <label class="point__price">
             write price
             <span class="point__price-currency">€</span>
-            <input class="point__input" type="text" value="${this._price}" name="price">
+            <input class="point__input" type="text" value="${this._price}" name="price" required>
           </label>
 
           <div class="point__buttons">
@@ -227,7 +239,8 @@ export default class EventEdit extends Component {
       .addEventListener(`submit`, this._onSubmitClick);
     this._element.querySelector(`button[type="reset"]`)
       .addEventListener(`click`, this._onDeleteClick);
-    this.element.querySelector(`.point__favorite-input`)
+    document.addEventListener(`keydown`, this._onEscapeClick);
+    this._element.querySelector(`.point__favorite-input`)
       .addEventListener(`click`, this._onChangeFavorite);
     this.element.querySelectorAll(`input[name="type"]`).forEach((radio) => {
       radio.addEventListener(`change`, this._onChangeType);
@@ -235,10 +248,10 @@ export default class EventEdit extends Component {
     this.element.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onChangeDestination);
     let timeStart = this._element.querySelector(`input[name='start']`);
-    flatpickr(timeStart, {enableTime: true, dateFormat: `Y-m-d H:i`});
+    flatpickr(timeStart, {enableTime: true, dateFormat: `H:i`});
 
     let timeEnd = this._element.querySelector(`input[name='end']`);
-    flatpickr(timeEnd, {enableTime: true, dateFormat: `Y-m-d H:i`});
+    flatpickr(timeEnd, {enableTime: true, dateFormat: `H:i`});
   }
 
   // Вызов метода unbind() возможен только после вызова render()
@@ -247,7 +260,8 @@ export default class EventEdit extends Component {
       .removeEventListener(`submit`, this._onSubmitClick);
     this._element.querySelector(`button[type="reset"]`)
       .removeEventListener(`click`, this._onDeleteClick);
-    this.element.querySelector(`.point__favorite-input`)
+    document.removeEventListener(`keydown`, this._onEscapeClick);
+    this._element.querySelector(`.point__favorite-input`)
       .removeEventListener(`click`, this._onChangeFavorite);
     this.element.querySelectorAll(`input[name="type"]`).forEach((radio) => {
       radio.removeEventListener(`change`, this._onChangeType);

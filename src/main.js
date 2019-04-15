@@ -132,6 +132,12 @@ const renderEvents = function (section, arr) {
           editEventComponent.onDeleteUnblock();
         });
     };
+
+    editEventComponent.onEscape = () => {
+      eventComponent.render();
+      section.replaceChild(eventComponent.element, editEventComponent.element);
+      editEventComponent.unrender();
+    };
   });
 };
 
@@ -162,3 +168,25 @@ const renderFilters = function (events) {
   });
 };
 
+const newEventButton = document.querySelector(`.trip-controls__new-event`);
+const createNewEvent = function (section) {
+  const object = {
+    id: ``,
+    type: `taxi`,
+    departureTime: moment(),
+    arrivalTime: moment(),
+    price: ``,
+    checkedOffers: [],
+    destination: {
+      name: ``,
+      pictures: [],
+      description: ``
+    }
+  };
+  const newEvent = new EventEdit(object);
+  section.insertBefore(newEvent.render(), section.firstChild);
+};
+
+newEventButton.addEventListener(`click`, function () {
+  createNewEvent(eventSection);
+});

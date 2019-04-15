@@ -4,22 +4,10 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 const staticButton = document.querySelector(`[href='#stats']`);
 const tableButton = document.querySelector(`[href='#table'`);
 const moneyCtx = document.querySelector(`.statistic__money`);
+const timeSpendCtx = document.querySelector(`.statistic__time-spend`);
 const transportCtx = document.querySelector(`.statistic__transport`);
 const main = document.querySelector(`main`);
 const statistic = document.querySelector(`.statistic`);
-const timeSpendCtx = document.querySelector(`.statistic__time-spend`);
-
-staticButton.addEventListener(`click`, function () {
-  main.classList.add(`visually-hidden`);
-  statistic.classList.remove(`visually-hidden`);
-}
-);
-
-tableButton.addEventListener(`click`, function () {
-  main.classList.remove(`visually-hidden`);
-  statistic.classList.add(`visually-hidden`);
-});
-
 
 const BAR_HEIGHT = 55;
 moneyCtx.height = BAR_HEIGHT * 6;
@@ -220,6 +208,16 @@ const timeSpendChart = new Chart(timeSpendCtx, {
       enabled: false,
     }
   }
+});
+
+staticButton.addEventListener(`click`, function () {
+  main.classList.add(`visually-hidden`);
+  statistic.classList.remove(`visually-hidden`);
+});
+
+tableButton.addEventListener(`click`, function () {
+  main.classList.remove(`visually-hidden`);
+  statistic.classList.add(`visually-hidden`);
 });
 
 export {moneyChart, transportChart, timeSpendChart};
