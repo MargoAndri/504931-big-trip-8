@@ -1,19 +1,28 @@
 import Event from './event.js';
 import EventEdit from './event-edit.js';
 import Filter from './filter.js';
+import TripSorting from './trip_sorting.js';
 import {moneyChart, transportChart, timeSpendChart} from "./charts";
-import {filters, api} from "./data";
+import {filters, api, sortingList} from "./data";
 import Provider from './provider.js';
 import Store from './store.js';
 import moment from "moment";
 
+
 const EVENTS_STORE_KEY = `events-store-key`;
 const eventSection = document.querySelector(`.trip-day__items`);
 const filtersForm = document.querySelector(`.trip-filter`);
+const sortingForm = document.querySelector(`.trip-sorting`);
 const store = new Store(EVENTS_STORE_KEY, localStorage);
-const provider = new Provider(api, store);
+const provider = new Provider({api, store, generateId: () => String(Date.now())});
 const onLoad = () => {
   eventSection.innerHTML = `Loading route...`;
+};
+
+const load = (isSuccess) => {
+  return new Promise((res, rej) => {
+    setTimeout(isSuccess ? res : rej, 5000);
+  });
 };
 
 window.addEventListener(`offline`, () => {
@@ -42,7 +51,6 @@ const transportData = function (events) {
   transportChart.data.datasets[0].data = Object.values(counts);
   transportChart.update();
 };
-
 
 // Статистика затрат
 const moneyData = function (events) {
@@ -78,6 +86,7 @@ const timeData = function (events) {
   timeSpendChart.update();
 };
 
+
 /**
  * @param {Element} section
  * @param {Array} arr
@@ -99,6 +108,7 @@ const renderEvents = function (section, arr) {
     editEventComponent.onSubmit = (newObject) => {
       element.destination = newObject.destination;
       element.type = newObject.type;
+      element.date = newObject.date;
       element.departureTime = newObject.departureTime;
       element.arrivalTime = newObject.arrivalTime;
       element.price = parseInt(newObject.price, 10);
@@ -141,16 +151,11 @@ const renderEvents = function (section, arr) {
   });
 };
 
-const load = (isSuccess) => {
-  return new Promise((res, rej) => {
-    setTimeout(isSuccess ? res : rej, 5000);
-  });
-};
-
 provider.getPoints(onLoad)
   .then((points) => {
     renderEvents(eventSection, points);
     renderFilters(points);
+    renderSortedEvents(points);
     transportData(points);
     moneyData(points);
     timeData(points);
@@ -168,11 +173,29 @@ const renderFilters = function (events) {
   });
 };
 
+// Сортировка
+const renderSortedEvents = function (events) {
+  sortingList.forEach((item) => {
+    const sorting = new TripSorting(item.name, item.title);
+    if (typeof item.sort === `function`) {
+      sorting.onSorting = () => {
+        const sortedEvents = Array.from(events).sort(item.sort);
+        renderEvents(eventSection, sortedEvents);
+      };
+    } else {
+      renderEvents(eventSection, events);
+    }
+    sortingForm.appendChild(sorting.render());
+  });
+};
+
+// Создание новой точки маршрута
 const newEventButton = document.querySelector(`.trip-controls__new-event`);
 const createNewEvent = function (section) {
   const object = {
     id: ``,
     type: `taxi`,
+    date: ``,
     departureTime: moment(),
     arrivalTime: moment(),
     price: ``,
@@ -183,8 +206,51 @@ const createNewEvent = function (section) {
       description: ``
     }
   };
-  const newEvent = new EventEdit(object);
-  section.insertBefore(newEvent.render(), section.firstChild);
+  const newEventEdit = new EventEdit(object);
+  newEventEdit.onSubmit = (newObject) => {
+    let element = {
+      'id': newObject.id,
+      'destination': newObject.destination,
+      'date': newObject.date,
+      'type': newObject.type,
+      'date_from': +newObject.departureTime.format(`x`),
+      'date_to': +newObject.arrivalTime.format(`x`),
+      'base_price': parseInt(newObject.price, 10),
+      'is_favorite': newObject.isFavorite,
+      'offers': newObject.checkedOffers.map((offer) => {
+        return {title: offer.name, price: offer.price, accepted: true};
+      })
+    };
+    newEventEdit.onSaveBlock();
+
+    load(true)
+      .then(() => {
+        provider.createEvent(element)
+          .then((newPoint) => {
+            let newEvent = new Event(newPoint);
+            newEvent.render();
+            section.replaceChild(newEvent.element, newEventEdit.element);
+            newEventEdit.unrender();
+          });
+      })
+      .catch(() => {
+        newEventEdit.onSaveUnblock();
+      });
+  };
+  section.insertBefore(newEventEdit.render(), section.firstChild);
+
+  newEventEdit.onDelete = (id) => {
+    newEventEdit.onDeleteBlock();
+    provider.deleteEvent(id)
+      .then(
+          () => provider.getPoints(onLoad))
+      .then((points) => {
+        renderEvents(eventSection, points);
+      })
+      .catch(() => {
+        newEventEdit.onDeleteUnblock();
+      });
+  };
 };
 
 newEventButton.addEventListener(`click`, function () {

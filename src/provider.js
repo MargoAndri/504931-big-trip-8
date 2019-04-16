@@ -5,9 +5,10 @@ const objectToArray = (object) => {
 };
 
 export default class Provider {
-  constructor(api, store) {
+  constructor({api, store, generateId}) {
     this._api = api;
     this._store = store;
+    this._generateId = generateId;
     this._needSync = false;
   }
 
@@ -26,6 +27,22 @@ export default class Provider {
       const events = ModelEvents.parseEvents(rawEvents);
 
       return Promise.resolve(events);
+    }
+  }
+
+  createEvent(data) {
+    if (this._isOnline()) {
+      return this._api.createEvent(data)
+        .then((event) => {
+          this._store.setItem(event.id, event.toRAW());
+          return event;
+        });
+    } else {
+      const event = data;
+      event.id = this._generateId();
+      this._needSync = true;
+      this._store.setItem(event.id, event);
+      return Promise.resolve(ModelEvents.parseEvent(event));
     }
   }
 

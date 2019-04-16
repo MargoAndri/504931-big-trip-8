@@ -9,6 +9,7 @@ export default class EventEdit extends Component {
     super();
     this._id = data.id;
     this._type = data.type;
+    this._date = data.date;
     this._departureTime = data.departureTime;
     this._arrivalTime = data.arrivalTime;
     this._price = data.price;
@@ -37,6 +38,7 @@ export default class EventEdit extends Component {
       destination: ``,
       type: ``,
       price: ``,
+      date: ``,
       departureTime: ``,
       arrivalTime: ``,
       offer: this._offer,
@@ -147,7 +149,7 @@ export default class EventEdit extends Component {
         <header class="point__header">
           <label class="point__date">
             choose day
-            <input class="point__input" type="text" placeholder="MAR 18" name="day" required>
+            <input class="point__input" type="text" placeholder="MAR 18" name="day" value="${this._date}" required>
           </label>
     
           <div class="travel-way">
@@ -182,7 +184,7 @@ export default class EventEdit extends Component {
 
           <div class="point__destination-wrap">
             <label class="point__destination-label" for="destination"></label>
-            <input class="point__destination-input" list="destination-select" id="destination" value="${this.title}" name="destination">
+            <input class="point__destination-input" list="destination-select" id="destination" value="${this.title}" name="destination" required>
             <datalist id="destination-select">
               ${destinations.join(``)}
             </datalist>
@@ -190,8 +192,8 @@ export default class EventEdit extends Component {
 
           <div class="point__time">
             choose time
-            <input class="point__input" type="text" value="${this._departureTime.format(`HH:mm`)}" name="start" placeholder="${this._departureTime.format(`HH:mm`)}" required>
-            <input class="point__input" type="text" value="${this._arrivalTime.format(`HH:mm`)}" name="end" placeholder="${this._arrivalTime.format(`HH:mm`)}" required>
+            <input class="point__input" type="text" value="${this._departureTime.format(`YYYY-MM-DD HH:mm`)}" name="start" placeholder="${this._departureTime.format(`HH:mm`)}" required>
+            <input class="point__input" type="text" value="${this._arrivalTime.format(`YYYY-MM-DD HH:mm`)}" name="end" placeholder="${this._arrivalTime.format(`HH:mm`)}" required>
           </div>
 
           <label class="point__price">
@@ -248,10 +250,13 @@ export default class EventEdit extends Component {
     this.element.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onChangeDestination);
     let timeStart = this._element.querySelector(`input[name='start']`);
-    flatpickr(timeStart, {enableTime: true, dateFormat: `H:i`});
+    flatpickr(timeStart, {enableTime: true, dateFormat: `Y-m-d H:i`, altInput: true, altFormat: `H:i`});
 
     let timeEnd = this._element.querySelector(`input[name='end']`);
-    flatpickr(timeEnd, {enableTime: true, dateFormat: `H:i`});
+    flatpickr(timeEnd, {enableTime: true, dateFormat: `Y-m-d H:i`, altInput: true, altFormat: `H:i`});
+
+    let pointDate = this._element.querySelector(`input[name='day']`);
+    flatpickr(pointDate, {dateFormat: `Y-m-d`, altInput: true, altFormat: `M j`});
   }
 
   // Вызов метода unbind() возможен только после вызова render()
@@ -321,6 +326,7 @@ export default class EventEdit extends Component {
   update(data) {
     this._destination = data.destination;
     this._type = data.type;
+    this._date = data.date;
     this._price = data.price;
     this._arrivalTime = data.arrivalTime;
     this._departureTime = data.departureTime;
@@ -331,6 +337,9 @@ export default class EventEdit extends Component {
     return {
       type: (value) => {
         target.type = value;
+      },
+      day: (value) => {
+        target.date = value;
       },
       destination: (value) => {
         for (let item of destinationList) {
@@ -344,7 +353,9 @@ export default class EventEdit extends Component {
       },
       offer: (value) => {
         let checkedOffer = target.offer.find((item) => item.name === value);
-        target.checkedOffers.push(checkedOffer);
+        if (checkedOffer !== undefined) {
+          target.checkedOffers.push(checkedOffer);
+        }
       },
       start: (value) => {
         target.departureTime = moment(value);

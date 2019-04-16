@@ -41,6 +41,17 @@ export default class API {
       .then(toJSON);
   }
 
+  createEvent(data) {
+    return this._load({
+      url: `points`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then(toJSON)
+      .then(ModelEvents.parseEvent);
+  }
+
   updateEvents(id, data) {
     return this._load({
       url: `points/${id}`,

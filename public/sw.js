@@ -30,7 +30,7 @@
 //     caches.match(evt.request)
 //       .then((response) => {
 //         console.log(`Find in cache`, response);
-//         return response ? response : fetch(evt.response);
+//         return response ? response : fetch(evt.request);
 //       })
 //       .catch((error) => {
 //         throw error;

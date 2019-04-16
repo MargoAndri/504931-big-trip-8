@@ -33,6 +33,40 @@ const filters = [
   },
 ];
 
+const sortingList = [
+  {
+    title: `Event`,
+    name: `event`,
+    sort: () => true,
+  },
+  {
+    title: `Time`,
+    name: `time`,
+    sort: (a, b) => {
+      if (a.duration > b.duration) {
+        return -1;
+      }
+      if (a.duration < b.duration) {
+        return 1;
+      }
+      return 0;
+    }
+  },
+  {
+    title: `Price`,
+    name: `price`,
+    sort: (a, b) => {
+      if (a.totalPrice > b.totalPrice) {
+        return -1;
+      }
+      if (a.totalPrice < b.totalPrice) {
+        return 1;
+      }
+      return 0;
+    }
+  }
+];
+
 let destinationList = [];
 api.getDestinations()
   .then((destinations) => {
@@ -45,4 +79,4 @@ api.getOffers()
     offerList = offers;
   });
 
-export {Type, filters, api, destinationList, offerList, ECS_KEY_CODE};
+export {Type, filters, api, destinationList, offerList, ECS_KEY_CODE, sortingList};
