@@ -342,10 +342,18 @@ export default class EventEdit extends Component {
         target.date = value;
       },
       destination: (value) => {
-        for (let item of destinationList) {
-          if (item.name === value) {
-            target.destination = item;
+        if (value !== ``) {
+          for (let item of destinationList) {
+            if (item.name === value) {
+              target.destination = item;
+            }
           }
+        } else {
+          target.destination = {
+            name: ``,
+            pictures: [],
+            description: ``
+          };
         }
       },
       price: (value) => {

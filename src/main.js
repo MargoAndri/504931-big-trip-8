@@ -11,20 +11,16 @@ import moment from "moment";
 
 
 const EVENTS_STORE_KEY = `events-store-key`;
+const TIME_SETTER = 5000;
 const eventSection = document.querySelector(`.trip-day__items`);
 const filtersForm = document.querySelector(`.trip-filter`);
 const sortingForm = document.querySelector(`.trip-sorting`);
 const tripSection = document.querySelector(`.trip`);
+const newEventButton = document.querySelector(`.trip-controls__new-event`);
 const store = new Store(EVENTS_STORE_KEY, localStorage);
 const provider = new Provider({api, store, generateId: () => String(Date.now())});
 const onLoad = () => {
   eventSection.innerHTML = `Loading route...`;
-};
-
-const load = (isSuccess) => {
-  return new Promise((res, rej) => {
-    setTimeout(isSuccess ? res : rej, 5000);
-  });
 };
 
 window.addEventListener(`offline`, () => {
@@ -35,8 +31,32 @@ window.addEventListener(`online`, () => {
   provider.syncEvents();
 });
 
+newEventButton.addEventListener(`click`, function () {
+  createNewEvent(eventSection);
+});
+
+const loadDelaysImitation = (isSuccess) => {
+  return new Promise((res, rej) => {
+    setTimeout(isSuccess ? res : rej, TIME_SETTER);
+  });
+};
+
+provider.getPoints(onLoad)
+  .then((points) => {
+    renderEvents(eventSection, points);
+    renderFilters(points);
+    renderSortedEvents(points);
+    renderTransportData(points);
+    renderMoneyData(points);
+    renderTimeData(points);
+    renderTotalCost(points);
+  });
+
 // Статистика транспорта
-const transportData = function (events) {
+/**
+ * @param {Array} events
+ */
+const renderTransportData = function (events) {
   const eventTypes = events.map((item) => item.type);
 
   const filteredTransportTypes = eventTypes.filter((it) => it !== `checkin` && it !== `sightseeing`);
@@ -55,7 +75,10 @@ const transportData = function (events) {
 };
 
 // Статистика затрат
-const moneyData = function (events) {
+/**
+ * @param {Array} events
+ */
+const renderMoneyData = function (events) {
   const priceCount = events.reduce((totalPrices, event) => {
     let price = event.checkedOffers.reduce(function (totalPrice, current) {
       return totalPrice + current.price;
@@ -73,7 +96,10 @@ const moneyData = function (events) {
 };
 
 // Статистика времени
-const timeData = function (events) {
+/**
+ * @param {Array} events
+ */
+const renderTimeData = function (events) {
   const timeCount = events.reduce((totalTimeList, event) => {
     let timeDuration = moment.duration(event.arrivalTime.diff(event.departureTime));
     if (totalTimeList[event.type] !== undefined) {
@@ -117,9 +143,9 @@ const renderEvents = function (section, arr) {
       element.checkedOffers = newObject.checkedOffers;
       editEventComponent.onSaveBlock();
 
-      load(true)
+      loadDelaysImitation(true)
         .then(() => {
-          provider.updateEvents(element.id, element.toRAW())
+          provider.updateEvents(element.id, element.toRaw())
             .then((newPoint) => {
               eventComponent.update(newPoint);
               eventComponent.render();
@@ -153,18 +179,11 @@ const renderEvents = function (section, arr) {
   });
 };
 
-provider.getPoints(onLoad)
-  .then((points) => {
-    renderEvents(eventSection, points);
-    renderFilters(points);
-    renderSortedEvents(points);
-    transportData(points);
-    moneyData(points);
-    timeData(points);
-    renderTotalCost(points);
-  });
 
 // Фильтры
+/**
+ * @param {Array} events
+ */
 const renderFilters = function (events) {
   filters.forEach((item) => {
     const filter = new Filter(item.name, item.title);
@@ -177,6 +196,9 @@ const renderFilters = function (events) {
 };
 
 // Сортировка
+/**
+ * @param {Array} events
+ */
 const renderSortedEvents = function (events) {
   sortingList.forEach((item) => {
     const sorting = new TripSorting(item.name, item.title);
@@ -193,6 +215,9 @@ const renderSortedEvents = function (events) {
 };
 
 // Подсчет итоговой цены
+/**
+ * @param {Array} events
+ */
 const renderTotalCost = function (events) {
   const totalPrice = events.reduce(function (totalCost, event) {
     return totalCost + event.totalPrice;
@@ -204,7 +229,9 @@ const renderTotalCost = function (events) {
 };
 
 // Создание новой точки маршрута
-const newEventButton = document.querySelector(`.trip-controls__new-event`);
+/**
+ * @param {Node} section
+ */
 const createNewEvent = function (section) {
   const object = {
     id: ``,
@@ -237,7 +264,7 @@ const createNewEvent = function (section) {
     };
     newEventEdit.onSaveBlock();
 
-    load(true)
+    loadDelaysImitation(true)
       .then(() => {
         provider.createEvent(element)
           .then((newPoint) => {
@@ -267,6 +294,4 @@ const createNewEvent = function (section) {
   };
 };
 
-newEventButton.addEventListener(`click`, function () {
-  createNewEvent(eventSection);
-});
+

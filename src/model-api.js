@@ -1,7 +1,7 @@
 
 import moment from 'moment';
 
-export default class ModelEvents {
+export default class ModelEvent {
   constructor(data) {
     this.id = data[`id`];
     this.destination = data[`destination`];
@@ -20,7 +20,7 @@ export default class ModelEvents {
     }, this.price);
   }
 
-  toRAW() {
+  toRaw() {
     return {
       'id': this.id,
       'destination': this.destination,
@@ -37,11 +37,11 @@ export default class ModelEvents {
   }
 
   static parseEvent(data) {
-    return new ModelEvents(data);
+    return new ModelEvent(data);
   }
 
   static parseEvents(data) {
-    return data.map(ModelEvents.parseEvent);
+    return data.map(ModelEvent.parseEvent);
   }
 }
 

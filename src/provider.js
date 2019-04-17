@@ -1,4 +1,4 @@
-import ModelEvents from './model-api.js';
+import ModelEvent from './model-api.js';
 
 const objectToArray = (object) => {
   return Object.keys(object).map((id) => object[id]);
@@ -17,14 +17,14 @@ export default class Provider {
       return this._api.getPoints(onLoad)
         .then((events) => {
           events.forEach((it) => {
-            this._store.setItem(it.id, it.toRAW());
+            this._store.setItem(it.id, it.toRaw());
           });
           return events;
         });
     } else {
       const rawEventsMap = this._store.getAll();
       const rawEvents = objectToArray(rawEventsMap);
-      const events = ModelEvents.parseEvents(rawEvents);
+      const events = ModelEvent.parseEvents(rawEvents);
 
       return Promise.resolve(events);
     }
@@ -34,7 +34,7 @@ export default class Provider {
     if (this._isOnline()) {
       return this._api.createEvent(data)
         .then((event) => {
-          this._store.setItem(event.id, event.toRAW());
+          this._store.setItem(event.id, event.toRaw());
           return event;
         });
     } else {
@@ -42,7 +42,7 @@ export default class Provider {
       event.id = this._generateId();
       this._needSync = true;
       this._store.setItem(event.id, event);
-      return Promise.resolve(ModelEvents.parseEvent(event));
+      return Promise.resolve(ModelEvent.parseEvent(event));
     }
   }
 
@@ -50,14 +50,14 @@ export default class Provider {
     if (this._isOnline()) {
       return this._api.updateEvents(id, data)
         .then((event) => {
-          this._store.setItem(event.id, event.toRAW());
+          this._store.setItem(event.id, event.toRaw());
           return event;
         });
     } else {
       const event = data;
       this._needSync = true;
       this._store.setItem(event.id, event);
-      return Promise.resolve(ModelEvents.parseEvent(event));
+      return Promise.resolve(ModelEvent.parseEvent(event));
     }
   }
 

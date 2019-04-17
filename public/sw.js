@@ -29,8 +29,18 @@
 //   evt.respondWith(
 //     caches.match(evt.request)
 //       .then((response) => {
-//         console.log(`Find in cache`, response);
-//         return response ? response : fetch(evt.request);
+//         console.log(`Find in cache`, {response});
+//         if (response) {
+//           return response;
+//         } else {
+//           return fetch(evt.request)
+//             .then(function(response) {
+//               caches.open(CACHE_NAME)
+//                 .then((cache) => cache.put(evt.request, response.clone()));
+//
+//               return response.clone();
+//             });
+//         }
 //       })
 //       .catch((error) => {
 //         throw error;

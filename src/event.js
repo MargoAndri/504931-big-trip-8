@@ -34,6 +34,7 @@ export default class Event extends Component {
       return totalPrice + current.price;
     }, this._price);
   }
+
   get duration() {
     let durationString = ``;
     if (this._duration.days() > 0) {
@@ -70,14 +71,12 @@ export default class Event extends Component {
 
   // Вызов метода bind() возможен только после вызова render()
   bind() {
-    this._element.querySelector(`.trip-point__title`)
-      .addEventListener(`click`, this._onClick.bind(this));
+    this._element.addEventListener(`click`, this._onClick.bind(this));
   }
 
   // Вызов метода unbind() возможен только после вызова render()
   unbind() {
-    this._element.querySelector(`.trip-point__title`)
-      .removeEventListener(`click`, this._onClick);
+    this._element.removeEventListener(`click`, this._onClick);
   }
 
   update(data) {

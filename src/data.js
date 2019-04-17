@@ -1,10 +1,10 @@
 import moment from 'moment';
-import API from "./api";
+import TripPointsApi from "./tripPointsApi";
 
 const ECS_KEY_CODE = `Escape`;
 const AUTHORIZATION = `Basic eo0w590ik29889z`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
-const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+const api = new TripPointsApi({endPoint: END_POINT, authorization: AUTHORIZATION});
 
 const Type = {
   taxi: `🚕`,

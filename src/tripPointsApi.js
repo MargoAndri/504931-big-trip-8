@@ -1,4 +1,4 @@
-import ModelEvents from './model-api.js';
+import ModelEvent from './model-api.js';
 const Method = {
   GET: `GET`,
   POST: `POST`,
@@ -18,7 +18,7 @@ const toJSON = (response) => {
   return response.json();
 };
 
-export default class API {
+export default class TripPointsApi {
   constructor({endPoint, authorization}) {
     this._endPoint = endPoint;
     this._authorization = authorization;
@@ -28,7 +28,7 @@ export default class API {
     onLoad();
     return this._load({url: `points`})
       .then(toJSON)
-      .then(ModelEvents.parseEvents);
+      .then(ModelEvent.parseEvents);
   }
 
   getDestinations() {
@@ -49,7 +49,7 @@ export default class API {
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then(toJSON)
-      .then(ModelEvents.parseEvent);
+      .then(ModelEvent.parseEvent);
   }
 
   updateEvents(id, data) {
@@ -60,7 +60,7 @@ export default class API {
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then(toJSON)
-      .then(ModelEvents.parseEvent);
+      .then(ModelEvent.parseEvent);
   }
 
   deleteEvent(id) {
