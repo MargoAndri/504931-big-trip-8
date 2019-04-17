@@ -15,7 +15,6 @@ export default class ModelEvents {
     });
   }
 
-  //fixme camelcase
   toRAW() {
     return {
       'id': this.id,
