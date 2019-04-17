@@ -20,7 +20,6 @@
         <h1 class="trip__points">Amsterdam&nbsp;&mdash; Geneva&nbsp;&mdash;  Chamonix</h1>
         <p class="trip__dates">Mar 17&nbsp;&mdash; 19</p>
       </div>
-      <p class="trip__total">Total: <span class="trip__total-cost">&euro;&nbsp;1500</span></p>
     </section>
 
     <section class="trip-controls">
@@ -29,7 +28,6 @@
         <a href="#stats" class="view-switch__item">Stats</a>
 
         <form class="trip-filter">
-
         </form>
       </nav>
 
@@ -41,15 +39,6 @@
 
 <main class="main content-wrap" id="table">
   <form class="trip-sorting">
-    <input type="radio" name="trip-sorting" id="sorting-event" value="event" checked>
-    <label class="trip-sorting__item trip-sorting__item--event" for="sorting-event">Event</label>
-
-    <input type="radio" name="trip-sorting" id="sorting-time" value="time">
-    <label class="trip-sorting__item trip-sorting__item--time" for="sorting-time">Time</label>
-
-    <input type="radio" name="trip-sorting" id="sorting-price" value="price">
-    <label class="trip-sorting__item trip-sorting__item--price" for="sorting-price">Price</label>
-
     <span class="trip-sorting__item trip-sorting__item--offers">Offers</span>
   </form>
 
@@ -82,7 +71,15 @@
 </section>
 
 <script src="./bundle.js"></script>
-
+<!--<script>-->
+  <!--navigator.serviceWorker.register('./sw.js')-->
+  <!--.then(function (reg) {-->
+    <!--console.log(`Registration succeeded.Scope is ${reg.scope}`);-->
+  <!--})-->
+  <!--.catch(function (error) {-->
+    <!--console.log(`Registration failed with ${error}`);-->
+  <!--});-->
+<!--</script>-->
 
 </body>
 </html>

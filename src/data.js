@@ -1,9 +1,10 @@
 import moment from 'moment';
-import API from "./api";
+import TripPointsApi from "./tripPointsApi";
 
+const ECS_KEY_CODE = `Escape`;
 const AUTHORIZATION = `Basic eo0w590ik29889z`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
-const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+const api = new TripPointsApi({endPoint: END_POINT, authorization: AUTHORIZATION});
 
 const Type = {
   taxi: `🚕`,
@@ -14,8 +15,7 @@ const Type = {
   sightseeing: `🏛️`
 };
 
-// fixme это массив, он не должен быть с большой буквы
-const Filters = [
+const filters = [
   {
     title: `Everything`,
     name: `everything`,
@@ -33,18 +33,50 @@ const Filters = [
   },
 ];
 
+const sortingList = [
+  {
+    title: `Event`,
+    name: `event`,
+    sort: () => true,
+  },
+  {
+    title: `Time`,
+    name: `time`,
+    sort: (a, b) => {
+      if (a.duration > b.duration) {
+        return -1;
+      }
+      if (a.duration < b.duration) {
+        return 1;
+      }
+      return 0;
+    }
+  },
+  {
+    title: `Price`,
+    name: `price`,
+    sort: (a, b) => {
+      if (a.totalPrice > b.totalPrice) {
+        return -1;
+      }
+      if (a.totalPrice < b.totalPrice) {
+        return 1;
+      }
+      return 0;
+    }
+  }
+];
+
 let destinationList = [];
-// fixme тут проблема работы с промисами ты никогда не знаешь, когда у тебя загрузится этот destinationList
 api.getDestinations()
   .then((destinations) => {
     destinationList = destinations;
   });
 
-// fixme тут проблема работы с промисами ты никогда не знаешь, когда у тебя загрузится этот offerList
 let offerList = [];
 api.getOffers()
   .then((offers) => {
     offerList = offers;
   });
 
-export {Type, Filters, api, destinationList, offerList};
+export {Type, filters, api, destinationList, offerList, ECS_KEY_CODE, sortingList};

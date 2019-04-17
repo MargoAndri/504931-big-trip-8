@@ -1,25 +1,30 @@
 
 import moment from 'moment';
 
-export default class ModelEvents {
+export default class ModelEvent {
   constructor(data) {
     this.id = data[`id`];
     this.destination = data[`destination`];
     this.type = data[`type`].replace(`-`, ``);
+    this.date = data[`date`] || moment(data[`date_from`]).format(`YYYY-MM-DD`);
     this.departureTime = moment(data[`date_from`]);
     this.arrivalTime = moment(data[`date_to`]);
     this.price = data[`base_price`];
     this.isFavorite = Boolean(data[`is_favorite`]);
+    this.duration = moment.duration(this.arrivalTime.diff(this.departureTime));
     this.checkedOffers = data.offers.filter((element) => element.accepted).map((element) => {
       return {name: element.title, price: element.price};
     });
+    this.totalPrice = this.checkedOffers.reduce(function (totalPrice, current) {
+      return totalPrice + current.price;
+    }, this.price);
   }
 
-  //fixme camelcase
-  toRAW() {
+  toRaw() {
     return {
       'id': this.id,
       'destination': this.destination,
+      'date': this.date,
       'type': this.type,
       'date_from': +this.departureTime.format(`x`),
       'date_to': +this.arrivalTime.format(`x`),
@@ -32,11 +37,11 @@ export default class ModelEvents {
   }
 
   static parseEvent(data) {
-    return new ModelEvents(data);
+    return new ModelEvent(data);
   }
 
   static parseEvents(data) {
-    return data.map(ModelEvents.parseEvent);
+    return data.map(ModelEvent.parseEvent);
   }
 }
 

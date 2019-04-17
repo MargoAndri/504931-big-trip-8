@@ -1,4 +1,4 @@
-import ModelEvents from './model-api.js';
+import ModelEvent from './model-api.js';
 const Method = {
   GET: `GET`,
   POST: `POST`,
@@ -18,8 +18,7 @@ const toJSON = (response) => {
   return response.json();
 };
 
-//fixme плохое название, сегодня у тебя одно API, а завтра шесть. Лучше сразу назови его со смыслом.
-export default class API {
+export default class TripPointsApi {
   constructor({endPoint, authorization}) {
     this._endPoint = endPoint;
     this._authorization = authorization;
@@ -29,7 +28,7 @@ export default class API {
     onLoad();
     return this._load({url: `points`})
       .then(toJSON)
-      .then(ModelEvents.parseEvents);
+      .then(ModelEvent.parseEvents);
   }
 
   getDestinations() {
@@ -42,6 +41,17 @@ export default class API {
       .then(toJSON);
   }
 
+  createEvent(data) {
+    return this._load({
+      url: `points`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then(toJSON)
+      .then(ModelEvent.parseEvent);
+  }
+
   updateEvents(id, data) {
     return this._load({
       url: `points/${id}`,
@@ -50,7 +60,7 @@ export default class API {
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then(toJSON)
-      .then(ModelEvents.parseEvent);
+      .then(ModelEvent.parseEvent);
   }
 
   deleteEvent(id) {
@@ -67,7 +77,6 @@ export default class API {
       .then(toJSON);
   }
 
-  //fixme https://medium.com/@shahata/why-i-wont-be-using-fetch-api-in-my-apps-6900e6c6fe78 почитай вот это с целью изучения того, как фетч себя иногда странно ведет и учти краевые условия.
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
