@@ -11,10 +11,13 @@ const eventSection = document.querySelector(`.trip-day__items`);
 const filtersForm = document.querySelector(`.trip-filter`);
 const store = new Store(EVENTS_STORE_KEY, localStorage);
 const provider = new Provider(api, store);
+
+// fixme непонятно почему тут функция стрелочная, а в остальных местах обычная
 const onLoad = () => {
   eventSection.innerHTML = `Loading route...`;
 };
 
+// fixme это действия, а после них у тебя идут функции. Сгруппируй действия в одну кучку, а объявления функций в другую.
 window.addEventListener(`offline`, () => {
   document.title = `${document.title}[OFFLINE]`;
 });
@@ -24,6 +27,8 @@ window.addEventListener(`online`, () => {
 });
 
 // Статистика транспорта
+// fixme описать тип параметра events
+// fixme если это функция, то она должна быть с глаголом в названии
 const transportData = function (events) {
   const eventTypes = events.map((item) => item.type);
 
@@ -37,6 +42,7 @@ const transportData = function (events) {
     return arr;
   }, []);
 
+  //fixme зачем тут такая конструкция, для уникальности? по мне так лучше написать функцию unique
   transportChart.data.labels = [...new Set(filteredTransportTypes)];
   transportChart.data.datasets[0].data = Object.values(counts);
   transportChart.update();
@@ -92,6 +98,7 @@ const renderEvents = function (section, arr) {
       load(true)
         .then(() => {
           provider.updateEvents(element.id, element.toRAW())
+          //fixme тут у нас какой-то promise callback hell, see this: https://medium.com/@pyrolistical/how-to-get-out-of-promise-hell-8c20e0ab0513
             .then((newPoint) => {
               eventComponent.update(newPoint);
               eventComponent.render();
@@ -110,6 +117,7 @@ const renderEvents = function (section, arr) {
         .then(
             () => provider.getPoints(onLoad))
         .then((points) => {
+          //fixme я тебе советую из фукнций внутри then-блоков всегда чего-нибудь возвращать, тогда ты сможешь подвязывать к ним новые then'ы
           renderEvents(eventSection, points);
         })
         .catch(() => {
@@ -119,12 +127,14 @@ const renderEvents = function (section, arr) {
   });
 };
 
+// fixme плохое имя функции, надо конкретнее
 const load = (isSuccess) => {
   return new Promise((res, rej) => {
+    // fixme 5000 это волшебное значение, вынести в переменную
     setTimeout(isSuccess ? res : rej, 5000);
   });
 };
-
+// fixme опять действия
 provider.getPoints(onLoad)
   .then((points) => {
     renderEvents(eventSection, points);
@@ -134,6 +144,7 @@ provider.getPoints(onLoad)
   });
 
 // Фильтры
+// fixme описать что делает фунцкия
 const renderFilters = function (events) {
   Filters.forEach((item) => {
     const filter = new Filter(item.name, item.title);

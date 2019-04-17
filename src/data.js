@@ -14,6 +14,7 @@ const Type = {
   sightseeing: `🏛️`
 };
 
+// fixme это массив, он не должен быть с большой буквы
 const Filters = [
   {
     title: `Everything`,
@@ -33,11 +34,13 @@ const Filters = [
 ];
 
 let destinationList = [];
+// fixme тут проблема работы с промисами ты никогда не знаешь, когда у тебя загрузится этот destinationList
 api.getDestinations()
   .then((destinations) => {
     destinationList = destinations;
   });
 
+// fixme тут проблема работы с промисами ты никогда не знаешь, когда у тебя загрузится этот offerList
 let offerList = [];
 api.getOffers()
   .then((offers) => {

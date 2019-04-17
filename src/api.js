@@ -18,6 +18,7 @@ const toJSON = (response) => {
   return response.json();
 };
 
+//fixme плохое название, сегодня у тебя одно API, а завтра шесть. Лучше сразу назови его со смыслом.
 export default class API {
   constructor({endPoint, authorization}) {
     this._endPoint = endPoint;
@@ -66,6 +67,7 @@ export default class API {
       .then(toJSON);
   }
 
+  //fixme https://medium.com/@shahata/why-i-wont-be-using-fetch-api-in-my-apps-6900e6c6fe78 почитай вот это с целью изучения того, как фетч себя иногда странно ведет и учти краевые условия.
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
