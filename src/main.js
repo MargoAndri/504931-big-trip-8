@@ -6,6 +6,7 @@ import {moneyChart, transportChart, timeSpendChart} from "./charts";
 import {filters, api, sortingList} from "./data";
 import Provider from './provider.js';
 import Store from './store.js';
+import TotalPrice from './total_price.js';
 import moment from "moment";
 
 
@@ -13,6 +14,7 @@ const EVENTS_STORE_KEY = `events-store-key`;
 const eventSection = document.querySelector(`.trip-day__items`);
 const filtersForm = document.querySelector(`.trip-filter`);
 const sortingForm = document.querySelector(`.trip-sorting`);
+const tripSection = document.querySelector(`.trip`);
 const store = new Store(EVENTS_STORE_KEY, localStorage);
 const provider = new Provider({api, store, generateId: () => String(Date.now())});
 const onLoad = () => {
@@ -159,6 +161,7 @@ provider.getPoints(onLoad)
     transportData(points);
     moneyData(points);
     timeData(points);
+    renderTotalCost(points);
   });
 
 // Фильтры
@@ -187,6 +190,17 @@ const renderSortedEvents = function (events) {
     }
     sortingForm.appendChild(sorting.render());
   });
+};
+
+// Подсчет итоговой цены
+const renderTotalCost = function (events) {
+  const totalPrice = events.reduce(function (totalCost, event) {
+    return totalCost + event.totalPrice;
+  }, 0);
+
+  const totalCostComponent = new TotalPrice(totalPrice);
+  tripSection.appendChild(totalCostComponent.render());
+
 };
 
 // Создание новой точки маршрута
