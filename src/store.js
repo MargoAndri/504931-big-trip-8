@@ -1,5 +1,4 @@
 export default class Store {
-  // fixme документировать
   constructor(key, storage) {
     this._storage = storage;
     this._storeKey = key;
