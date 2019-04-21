@@ -107,7 +107,7 @@ export default class EventEdit extends Component {
     const newData = this._processForm(formData);
     this.update(newData);
     this.unbind();
-    let newElement = createElement(this.template);
+    const newElement = createElement(this.template);
     this._element.innerHTML = newElement.innerHTML;
     this.bind();
   }
@@ -129,15 +129,15 @@ export default class EventEdit extends Component {
   }
 
   get template() {
-    let destinations = destinationList.map((destination) => `
+    const destinations = destinationList.map((destination) => `
       <option value="${destination.name}"></option>
     `.trim()
     );
-    let destinationImageList = this._destination.pictures.map((picture) => `
+    const destinationImageList = this._destination.pictures.map((picture) => `
     <img src="${picture.src}" alt="${picture.description}" class="point__destination-image">`
       .trim()
     );
-    let offers = this._offer.map((offer) =>
+    const offers = this._offer.map((offer) =>
       `<input class="point__offers-input visually-hidden" type="checkbox" id="${offer.name}" name="offer" value="${offer.name}" ${this._checkedOffers.find((item) => item.name === offer.name) !== undefined && `checked`}>
           <label for="${offer.name}" class="point__offers-label">
           <span class="point__offer-service">${offer.name}</span> + €<span class="point__offer-price">${offer.price}</span>
@@ -249,13 +249,13 @@ export default class EventEdit extends Component {
     });
     this.element.querySelector(`.point__destination-input`)
       .addEventListener(`change`, this._onChangeDestination);
-    let timeStart = this._element.querySelector(`input[name='start']`);
+    const timeStart = this._element.querySelector(`input[name='start']`);
     flatpickr(timeStart, {enableTime: true, dateFormat: `Y-m-d H:i`, altInput: true, altFormat: `H:i`});
 
-    let timeEnd = this._element.querySelector(`input[name='end']`);
+    const timeEnd = this._element.querySelector(`input[name='end']`);
     flatpickr(timeEnd, {enableTime: true, dateFormat: `Y-m-d H:i`, altInput: true, altFormat: `H:i`});
 
-    let pointDate = this._element.querySelector(`input[name='day']`);
+    const pointDate = this._element.querySelector(`input[name='day']`);
     flatpickr(pointDate, {dateFormat: `Y-m-d`, altInput: true, altFormat: `M j`});
   }
 
@@ -360,7 +360,7 @@ export default class EventEdit extends Component {
         target.price = value;
       },
       offer: (value) => {
-        let checkedOffer = target.offer.find((item) => item.name === value);
+        const checkedOffer = target.offer.find((item) => item.name === value);
         if (checkedOffer !== undefined) {
           target.checkedOffers.push(checkedOffer);
         }

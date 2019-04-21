@@ -1,6 +1,7 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+const BAR_HEIGHT = 55;
 const staticButton = document.querySelector(`[href='#stats']`);
 const tableButton = document.querySelector(`[href='#table'`);
 const moneyCtx = document.querySelector(`.statistic__money`);
@@ -9,7 +10,6 @@ const transportCtx = document.querySelector(`.statistic__transport`);
 const main = document.querySelector(`main`);
 const statistic = document.querySelector(`.statistic`);
 
-const BAR_HEIGHT = 55;
 moneyCtx.height = BAR_HEIGHT * 6;
 transportCtx.height = BAR_HEIGHT * 4;
 timeSpendCtx.height = BAR_HEIGHT * 6;
@@ -210,12 +210,12 @@ const timeSpendChart = new Chart(timeSpendCtx, {
   }
 });
 
-staticButton.addEventListener(`click`, function () {
+staticButton.addEventListener(`click`, () => {
   main.classList.add(`visually-hidden`);
   statistic.classList.remove(`visually-hidden`);
 });
 
-tableButton.addEventListener(`click`, function () {
+tableButton.addEventListener(`click`, () => {
   main.classList.remove(`visually-hidden`);
   statistic.classList.add(`visually-hidden`);
 });

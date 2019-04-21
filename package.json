@@ -12,8 +12,8 @@
   "devDependencies": {
     "eslint": "5.13.0",
     "eslint-config-htmlacademy": "0.5.2",
-    "webpack": "^4.29.5",
-    "webpack-cli": "^3.2.3",
+    "webpack": "4.29.5",
+    "webpack-cli": "3.2.3",
     "webpack-dev-server": "3.2.1"
   },
   "engines": {
@@ -22,7 +22,7 @@
   "dependencies": {
     "chart.js": "2.8.0",
     "chartjs-plugin-datalabels": "0.6.0",
-    "flatpickr": "^4.5.7",
-    "moment": "^2.24.0"
+    "flatpickr": "4.5.7",
+    "moment": "2.24.0"
   }
 }

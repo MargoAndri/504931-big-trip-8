@@ -30,7 +30,7 @@ export default class Event extends Component {
   }
 
   get totalPrice() {
-    return this._checkedOffers.reduce(function (totalPrice, current) {
+    return this._checkedOffers.reduce((totalPrice, current) => {
       return totalPrice + current.price;
     }, this._price);
   }

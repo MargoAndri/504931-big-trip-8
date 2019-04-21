@@ -1,8 +1,8 @@
 import moment from 'moment';
-import TripPointsApi from "./tripPointsApi";
+import TripPointsApi from "./trip-points-api";
 
 const ECS_KEY_CODE = `Escape`;
-const AUTHORIZATION = `Basic eo0w590ik29889z`;
+const AUTHORIZATION = `Basic eo0w590ik29879z`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
 const api = new TripPointsApi({endPoint: END_POINT, authorization: AUTHORIZATION});
 

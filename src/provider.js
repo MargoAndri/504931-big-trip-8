@@ -13,7 +13,7 @@ export default class Provider {
   }
 
   getPoints(onLoad) {
-    if (this._isOnline()) {
+    if (Provider.isOnline()) {
       return this._api.getPoints(onLoad)
         .then((events) => {
           events.forEach((it) => {
@@ -31,7 +31,7 @@ export default class Provider {
   }
 
   createEvent(data) {
-    if (this._isOnline()) {
+    if (Provider.isOnline()) {
       return this._api.createEvent(data)
         .then((event) => {
           this._store.setItem(event.id, event.toRaw());
@@ -47,7 +47,7 @@ export default class Provider {
   }
 
   updateEvents(id, data) {
-    if (this._isOnline()) {
+    if (Provider.isOnline()) {
       return this._api.updateEvents(id, data)
         .then((event) => {
           this._store.setItem(event.id, event.toRaw());
@@ -62,7 +62,7 @@ export default class Provider {
   }
 
   deleteEvent(id) {
-    if (this._isOnline()) {
+    if (Provider.isOnline()) {
       return this._api.deleteEvent(id)
         .then(() => {
           this._store.removeItem(id);
@@ -75,10 +75,12 @@ export default class Provider {
   }
 
   syncEvents() {
-    return this._api.syncEvents({data: objectToArray(this._store.getAll())});
+    if (this._needSync) {
+      this._api.syncEvents(objectToArray(this._store.getAll()));
+    }
   }
 
-  _isOnline() {
+  static isOnline() {
     return window.navigator.onLine;
   }
 }

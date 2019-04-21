@@ -1,12 +1,12 @@
 import Event from './event.js';
 import EventEdit from './event-edit.js';
 import Filter from './filter.js';
-import TripSorting from './trip_sorting.js';
+import TripSorting from './trip-sorting.js';
 import {moneyChart, transportChart, timeSpendChart} from "./charts";
 import {filters, api, sortingList} from "./data";
 import Provider from './provider.js';
 import Store from './store.js';
-import TotalPrice from './total_price.js';
+import TotalPrice from './total-price.js';
 import moment from "moment";
 
 
@@ -31,7 +31,7 @@ window.addEventListener(`online`, () => {
   provider.syncEvents();
 });
 
-newEventButton.addEventListener(`click`, function () {
+newEventButton.addEventListener(`click`, () => {
   createNewEvent(eventSection);
 });
 
@@ -56,7 +56,7 @@ provider.getPoints(onLoad)
 /**
  * @param {Array} events
  */
-const renderTransportData = function (events) {
+const renderTransportData = (events) => {
   const eventTypes = events.map((item) => item.type);
 
   const filteredTransportTypes = eventTypes.filter((it) => it !== `checkin` && it !== `sightseeing`);
@@ -78,9 +78,9 @@ const renderTransportData = function (events) {
 /**
  * @param {Array} events
  */
-const renderMoneyData = function (events) {
+const renderMoneyData = (events) => {
   const priceCount = events.reduce((totalPrices, event) => {
-    let price = event.checkedOffers.reduce(function (totalPrice, current) {
+    let price = event.checkedOffers.reduce((totalPrice, current) => {
       return totalPrice + current.price;
     }, event.price);
     if (totalPrices[event.type] !== undefined) {
@@ -99,9 +99,9 @@ const renderMoneyData = function (events) {
 /**
  * @param {Array} events
  */
-const renderTimeData = function (events) {
+const renderTimeData = (events) => {
   const timeCount = events.reduce((totalTimeList, event) => {
-    let timeDuration = moment.duration(event.arrivalTime.diff(event.departureTime));
+    const timeDuration = moment.duration(event.arrivalTime.diff(event.departureTime));
     if (totalTimeList[event.type] !== undefined) {
       totalTimeList[event.type].add(timeDuration);
     } else {
@@ -119,13 +119,12 @@ const renderTimeData = function (events) {
  * @param {Element} section
  * @param {Array} arr
  */
-const renderEvents = function (section, arr) {
+const renderEvents = (section, arr) => {
   section.innerHTML = ``;
 
-  arr.forEach(function (element) {
+  arr.forEach((element) => {
     const eventComponent = new Event(element);
     const editEventComponent = new EventEdit(element);
-    section.appendChild(eventComponent.render());
 
     eventComponent.onEdit = () => {
       editEventComponent.render();
@@ -176,6 +175,7 @@ const renderEvents = function (section, arr) {
       section.replaceChild(eventComponent.element, editEventComponent.element);
       editEventComponent.unrender();
     };
+    section.appendChild(eventComponent.render());
   });
 };
 
@@ -184,7 +184,7 @@ const renderEvents = function (section, arr) {
 /**
  * @param {Array} events
  */
-const renderFilters = function (events) {
+const renderFilters = (events) => {
   filters.forEach((item) => {
     const filter = new Filter(item.name, item.title);
     filter.onFilter = () => {
@@ -199,7 +199,7 @@ const renderFilters = function (events) {
 /**
  * @param {Array} events
  */
-const renderSortedEvents = function (events) {
+const renderSortedEvents = (events) => {
   sortingList.forEach((item) => {
     const sorting = new TripSorting(item.name, item.title);
     if (typeof item.sort === `function`) {
@@ -218,8 +218,8 @@ const renderSortedEvents = function (events) {
 /**
  * @param {Array} events
  */
-const renderTotalCost = function (events) {
-  const totalPrice = events.reduce(function (totalCost, event) {
+const renderTotalCost = (events) => {
+  const totalPrice = events.reduce((totalCost, event) =>{
     return totalCost + event.totalPrice;
   }, 0);
 
@@ -232,7 +232,7 @@ const renderTotalCost = function (events) {
 /**
  * @param {Node} section
  */
-const createNewEvent = function (section) {
+const createNewEvent = (section) => {
   const object = {
     id: ``,
     type: `taxi`,
@@ -249,7 +249,7 @@ const createNewEvent = function (section) {
   };
   const newEventEdit = new EventEdit(object);
   newEventEdit.onSubmit = (newObject) => {
-    let element = {
+    const element = {
       'id': newObject.id,
       'destination': newObject.destination,
       'date': newObject.date,
@@ -268,7 +268,7 @@ const createNewEvent = function (section) {
       .then(() => {
         provider.createEvent(element)
           .then((newPoint) => {
-            let newEvent = new Event(newPoint);
+            const newEvent = new Event(newPoint);
             newEvent.render();
             section.replaceChild(newEvent.element, newEventEdit.element);
             newEventEdit.unrender();
